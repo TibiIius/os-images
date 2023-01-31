@@ -1,0 +1,19 @@
+#!/bin/bash
+set -xe
+
+FILE_PATH=/usr/local/share/firstboot-state
+
+[[ -f "$FILE_PATH/done" ]] && exit 0
+
+/usr/bin/plymouth display-message --text="Running setup scripts (this might take a while)" || true
+
+mkdir -p "$FILE_PATH"
+
+scripts=$(ls /usr/libexec/firstboot/scripts.d/*.sh)
+
+for script in ${scripts[@]}; do
+  . "${script}"
+  unset -f main
+done
+
+touch $FILE_PATH/done

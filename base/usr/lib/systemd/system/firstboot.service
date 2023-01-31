@@ -1,0 +1,14 @@
+[Unit]
+Description=Runs configuration after rebasing to this image the first time
+After=packagekit.service rpm-ostreed.service usr.mount etc.mount -.mount var.mount
+Before=display-manager.service
+ConditionKernelCommandLine=!rd.live.image
+ConditionPathExists=!/usr/local/share/applications/firstboot-state/done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/firstboot/run
+ExecStartPost=systemctl disable firstboot.service
+
+[Install]
+WantedBy=multi-user.target
