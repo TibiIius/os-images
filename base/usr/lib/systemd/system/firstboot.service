@@ -1,5 +1,5 @@
 [Unit]
-Description=Runs configuration after rebasing to this image the first time
+Description=Runs setup script after rebasing to this image for the first time
 After=packagekit.service rpm-ostreed.service usr.mount etc.mount -.mount var.mount
 Before=display-manager.service
 ConditionKernelCommandLine=!rd.live.image
