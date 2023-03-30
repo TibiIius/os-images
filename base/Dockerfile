@@ -1,4 +1,4 @@
-FROM quay.io/fedora-ostree-desktops/silverblue:37
+FROM quay.io/fedora-ostree-desktops/silverblue:38
 # See https://pagure.io/releng/issue/11047 for final location
 
 
