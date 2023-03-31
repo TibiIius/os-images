@@ -9,18 +9,26 @@ on:
     paths-ignore:
       - "**/README.md"
 
-env:
-  IMAGE_NAME: custom-silverblue-base
-  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-
 jobs:
-  base:
+  build-and-push:
     name: Build and push base image
     runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
       id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image_major: ["37", "38", "latest"]
+        build_variant: ["base", "desktop", "laptop"]
+        exclude:
+          - image_major: "latest"
+            build_variant: "base"
+    env:
+      IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
+      IMAGE_TAGS: ${{ matrix.image_major }} ${{ github.sha }} latest
+      IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v3
 
@@ -29,10 +37,11 @@ jobs:
         uses: redhat-actions/buildah-build@v2.11
         with:
           containerfiles: |
-            ./base/Dockerfile
-          context: ./base
+            ./${{ matrix.build_variant }}/Dockerfile
+          build-args: |
+            IMAGE_MAJOR=${{ matrix.image_major }}
           image: ${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.sha }}
+          tags: ${{ env.IMAGE_TAGS }}
           oci: true
 
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
@@ -48,6 +57,7 @@ jobs:
         id: push
         with:
           image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
           registry: ${{ steps.registry_case.outputs.lowercase }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
