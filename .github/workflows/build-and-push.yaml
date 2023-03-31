@@ -21,14 +21,11 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        image_major: ["37", "38", "latest"]
-        build_variant: ["base", "desktop", "laptop"]
-        exclude:
-          - image_major: "latest"
-            build_variant: "base"
+        image_major: ["37", "38"]
+        build_variant: ["base", "laptop", "desktop"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
-      IMAGE_TAGS: ${{ matrix.image_major }} ${{ github.sha }} latest
+      IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v3
