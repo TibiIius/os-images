@@ -18,7 +18,8 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false
+      fail-fast: true
+      max-parallel: 1
       matrix:
         image_major: ["37", "38", "latest"]
         build_variant: ["base", "desktop", "laptop"]
