@@ -41,6 +41,7 @@ jobs:
             ./${{ matrix.build_variant }}/Dockerfile
           build-args: |
             IMAGE_MAJOR=${{ matrix.image_major }}
+          context: ./${{ matrix.build_variant }}
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ env.IMAGE_TAGS }}
           oci: true
