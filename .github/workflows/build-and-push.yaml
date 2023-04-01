@@ -22,7 +22,7 @@ jobs:
       max-parallel: 1
       matrix:
         image_major: ["37", "38"]
-        build_variant: ["base", "desktop", "laptop"]
+        build_variant: ["desktop"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
