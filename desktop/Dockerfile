@@ -26,7 +26,7 @@ RUN NVIDIA_PACKAGE_NAME="nvidia" \
   modinfo /usr/lib/modules/${KERNEL_VERSION}/extra/${NVIDIA_PACKAGE_NAME}/nvidia{,-drm,-modeset,-peermem,-uvm}.ko.xz > /dev/null || \
   (cat /var/cache/akmods/${NVIDIA_PACKAGE_NAME}/${NVIDIA_VERSION}-for-${KERNEL_VERSION}.failed.log && exit 1)
 
-RUN rpm -q "xorg-x11-drv-$(cat /tmp/nvidia-package-name.txt)" \
+RUN rpm -q "xorg-x11-drv-nvidia" \
   --queryformat '%{EPOCH}:%{VERSION}-%{RELEASE}.%{ARCH}' > /var/cache/akmods/nvidia-full-version.txt
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
