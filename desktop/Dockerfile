@@ -10,7 +10,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree install \
         akmods \
         mock \
-        xorg-x11-drv-nvidia-{,cuda,devel,kmodsrc,power} \
+        xorg-x11-drv-nvidia{,-cuda,-devel,-kmodsrc,-power} \
         binutils \
         kernel-devel-$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
 
@@ -42,7 +42,7 @@ RUN KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo && \
   rpm-ostree install \
-    xorg-x11-drv-${NVIDIA_PACKAGE_NAME}-{,cuda-,devel-,kmodsrc-,power-}${NVIDIA_FULL_VERSION} \
+    xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda-,-devel-,-kmodsrc-,-power-}${NVIDIA_FULL_VERSION} \
     kernel-devel-${KERNEL_VERSION} \
     "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_FULL_VERSION#*:}.rpm" && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
