@@ -1,5 +1,5 @@
 ARG IMAGE_MAJOR="${IMAGE_MAJOR:-latest}"
-ARG BASE_IMAGE="${ghcr.io/tibiiius/custom-silverblue-base}"
+ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
 
