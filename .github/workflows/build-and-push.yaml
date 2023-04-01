@@ -10,6 +10,25 @@ on:
       - "**/README.md"
 
 jobs:
+  find-changed-files:
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.changed-files.dirs }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          dir_names: true
+          files: |
+            base
+            desktop
+            laptop
+
   build-and-push:
     name: Build and push base image
     runs-on: ubuntu-22.04
@@ -17,12 +36,19 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    needs:
+      if: github.event_name == 'push'
+        - find-changed-files
     strategy:
       fail-fast: true
       max-parallel: 1
       matrix:
         image_major: ["37", "38"]
-        build_variant: ["base", "desktop", "laptop"]
+        build_variant:
+          if: github.event_name == 'push'
+            ${{fromJson(needs.find-out-changes.outputs.dirs)}}
+          else:
+            ["base", "desktop", "laptop"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
