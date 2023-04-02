@@ -1,18 +1,18 @@
 ARG IMAGE_MAJOR="${IMAGE_MAJOR:-38}"
 ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 
-FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
+FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR} as builder
 
 RUN rpm-ostree install \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm \
   fedora-repos-archive
 
 RUN rpm-ostree install \
-        akmods \
-        mock \
-        xorg-x11-drv-nvidia{,-cuda,-devel,-kmodsrc,-power} \
-        binutils \
-        kernel-devel-$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
+  akmods \
+  mock \
+  xorg-x11-drv-nvidia{,-cuda,-devel,-kmodsrc,-power} \
+  binutils \
+  kernel-devel-$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
 
 # I totally know why this is needed
 RUN ln -s /usr/bin/ld.bfd /etc/alternatives/ld && ln -s /etc/alternatives/ld /usr/bin/ld
@@ -37,13 +37,13 @@ RUN KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}
   NVIDIA_FULL_VERSION="$(cat /tmp/akmods/nvidia-full-version.txt)" \
   NVIDIA_PACKAGE_NAME="nvidia" && \
   rpm-ostree install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+  https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+  https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo && \
   rpm-ostree install \
-    xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \
-    kernel-devel-${KERNEL_VERSION} \
-    "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_FULL_VERSION#*:}.rpm" && \
+  xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \
+  kernel-devel-${KERNEL_VERSION} \
+  "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_FULL_VERSION#*:}.rpm" && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
