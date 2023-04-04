@@ -48,6 +48,6 @@ RUN KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
   rm -rf /tmp/* /var/* && \
-  rpm-ostree install openrgb-udev-rules 2c-tools libi2c-devel rEFInd && \
+  rpm-ostree install openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   rpm-ostree cleanup -m && \
   ostree container commit
