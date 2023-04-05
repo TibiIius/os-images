@@ -21,6 +21,7 @@ main() {
   # Replace Fedora's Flatpaks with Flathub's
   $FLATPAK_EXEC install --noninteractive org.gnome.Platform//43
   $FLATPAK_EXEC install --noninteractive --reinstall flathub $(flatpak list --app-runtime=org.fedoraproject.Platform --columns=application | tail -n +1 )
+  $FLATPAK_EXEC uninstall --noninteractive org.fedoraproject.Platform
   $FLATPAK_EXEC remote-delete fedora --force
   
   # Install some Flatpaks
