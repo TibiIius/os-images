@@ -1,11 +1,10 @@
 ARG IMAGE_MAJOR="${IMAGE_MAJOR:-38}"
 ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 
-FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR} as builder
+FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
 
-RUN rpm-ostree install \
-  https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm \
-  fedora-repos-archive
+RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
+  rpm-ostree install fedora-repos-archive
 
 RUN rpm-ostree install \
   akmods \
@@ -19,7 +18,7 @@ RUN ln -s /usr/bin/ld.bfd /etc/alternatives/ld && ln -s /etc/alternatives/ld /us
 
 RUN NVIDIA_PACKAGE_NAME="nvidia" \
   KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" \
-  NVIDIA_VERSION="$(basename "$(rpm -q "xorg-x11-drv-nvidia" --queryformat '%{VERSION}-%{RELEASE}')" ".fc$(rpm -E '%fedora')")"  && \ 
+  NVIDIA_VERSION="$(basename "$(rpm -q "xorg-x11-drv-nvidia" --queryformat '%{VERSION}-%{RELEASE}')" ".fc$(rpm -E '%fedora')")" && \
   chmod -R 1777 /tmp && \
   chmod -R 1777 /var/tmp && \
   akmods --force --kernels "${KERNEL_VERSION}" --kmod "${NVIDIA_PACKAGE_NAME}" && \
