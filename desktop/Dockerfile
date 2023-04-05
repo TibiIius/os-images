@@ -40,11 +40,12 @@ RUN KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}
   rpm-ostree install \
   xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \
   kernel-devel-${KERNEL_VERSION} \
-  "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_FULL_VERSION#*:}.rpm" && \
+  "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_FULL_VERSION#*:}.rpm" \
+  nvidia-vaapi-driver \
+  openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
   rm -rf /tmp/* /var/* && \
-  rpm-ostree install openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   rpm-ostree cleanup -m && \
   ostree container commit
