@@ -2,6 +2,8 @@ ARG IMAGE_MAJOR="${IMAGE_MAJOR:-38}"
 
 FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR}
 
+ARG IMAGE_MAJOR=${IMAGE_MAJOR}
+
 COPY etc/ /etc/
 COPY usr/ /usr/
 
