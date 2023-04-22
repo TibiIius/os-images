@@ -24,6 +24,7 @@ RUN rpm-ostree override remove firefox firefox-langpacks toolbox && \
   openssl \
   podman-compose \
   steam-devices \
+  google-noto-serif-cjk-vf-fonts google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts google-noto-sans-cjk-jp-fonts google-noto-serif-cjk-jp-fonts \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
   sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
