@@ -14,8 +14,8 @@ RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh &&
 RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules && \
   ostree container commit
 
-RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts google-noto-sans-cjk-jp-fonts google-noto-sans-cjk-kr-fonts google-noto-sans-cjk-sc-fonts google-noto-sans-cjk-tc-fonts google-noto-sans-cjk-ttc-fonts google-noto-serif-cjk-hk-fonts google-noto-serif-cjk-jp-fonts google-noto-serif-cjk-kr-fonts google-noto-serif-cjk-sc-fonts google-noto-serif-cjk-tc-fonts google-noto-serif-cjk-ttc-fonts"; else FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; fi && \
-  rpm-ostree override remove firefox firefox-langpacks toolbox && \
+RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts google-noto-sans-cjk-jp-fonts google-noto-sans-cjk-kr-fonts google-noto-sans-cjk-sc-fonts google-noto-sans-cjk-tc-fonts google-noto-sans-cjk-ttc-fonts google-noto-serif-cjk-jp-fonts google-noto-serif-cjk-kr-fonts google-noto-serif-cjk-sc-fonts google-noto-serif-cjk-tc-fonts google-noto-serif-cjk-ttc-fonts"; FONTS_REMOVE=""; else FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; fi && \
+  rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo && \
