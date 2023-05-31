@@ -11,7 +11,7 @@ on:
       - "build-local.sh"
 
 jobs:
-  build-and-push:
+  build-and-push-base:
     name: Build and push base image
     runs-on: ubuntu-22.04
     permissions:
@@ -19,16 +19,15 @@ jobs:
       packages: write
       id-token: write
     strategy:
-      fail-fast: false
-      max-parallel: 1
+      fail-fast: true
       matrix:
         image_major: ["37", "38"]
-        build_variant: ["base", "desktop", "laptop"]
+        build_variant: ["base"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    steps:
+    steps: &steps_ident
       - uses: actions/checkout@v3
 
       - name: Build base image
@@ -61,3 +60,22 @@ jobs:
           registry: ${{ steps.registry_case.outputs.lowercase }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
+
+  build-and-push-variant:
+    name: Build and push image variants
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image_major: ["37", "38"]
+        build_variant: ["desktop", "laptop"]
+    needs: build-and-push-base
+    env:
+      IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
+      IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
+      IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+    steps: *steps_ident
