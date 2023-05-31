@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build base image
+      - name: Build ${{ env.IMAGE_NAME }}
         id: build_image
         uses: redhat-actions/buildah-build@v2.11
         with:
@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build base image
+      - name: Build ${{ env.IMAGE_NAME }}
         id: build_image
         uses: redhat-actions/buildah-build@v2.11
         with:
@@ -111,4 +111,3 @@ jobs:
           registry: ${{ steps.registry_case.outputs.lowercase }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
-
