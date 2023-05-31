@@ -27,7 +27,7 @@ jobs:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    steps: &steps_ident
+    steps:
       - uses: actions/checkout@v3
 
       - name: Build base image
@@ -78,4 +78,37 @@ jobs:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    steps: *steps_ident
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build base image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2.11
+        with:
+          containerfiles: |
+            ./${{ matrix.build_variant }}/Dockerfile
+          build-args: |
+            IMAGE_MAJOR=${{ matrix.image_major }}
+          context: ./${{ matrix.build_variant }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          oci: true
+
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
+      # https://github.com/macbre/push-to-ghcr/issues/12
+      - name: Lowercase registry fix
+        id: registry_case
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Push to ghcr
+        uses: redhat-actions/push-to-registry@v2.7
+        id: push
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          registry: ${{ steps.registry_case.outputs.lowercase }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
