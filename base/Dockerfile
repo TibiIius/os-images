@@ -14,6 +14,11 @@ RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh &&
 RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules && \
   ostree container commit
 
+# Add Docker repo
+RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo && \
+  rpm-ostree cleanup -m && \
+  ostree container commit
+
 RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts google-noto-sans-cjk-jp-fonts google-noto-sans-cjk-kr-fonts google-noto-sans-cjk-sc-fonts google-noto-sans-cjk-tc-fonts google-noto-sans-cjk-ttc-fonts google-noto-serif-cjk-jp-fonts google-noto-serif-cjk-kr-fonts google-noto-serif-cjk-sc-fonts google-noto-serif-cjk-tc-fonts google-noto-serif-cjk-ttc-fonts"; FONTS_REMOVE=""; else FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; fi && \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
@@ -28,11 +33,13 @@ RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts go
   podman-compose \
   steam-devices \
   ${FONTS} \
-  virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top && \
+  virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
+  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
   sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
   systemctl enable rpm-ostreed-automatic.timer && \
   systemctl enable firstboot.service && \
+  systemctl enable docker.service && \
   # virt-install needs unbound, but that creates a key in /var/unbound
   # rpm-ostree doesn't like that, so we need to remove it
   rm -rf /var/* && \
