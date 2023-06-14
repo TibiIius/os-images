@@ -3,6 +3,9 @@ ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
 
+# Building NVIDIA kernel modules otherwise fails... Just why?
+RUN ln -s /usr/bin/rpm-ostree /usr/bin/dnf
+
 RUN sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
   rpm-ostree install fedora-repos-archive
 
