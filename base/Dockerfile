@@ -26,6 +26,7 @@ RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts go
   sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo && \
   rpm-ostree install \
   distrobox \
+  flatpak-builder \
   gnome-tweaks \
   zsh \
   libratbag-ratbagd \
