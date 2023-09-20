@@ -51,7 +51,7 @@ main() {
   fi
 
   IMAGE=${IMAGE:-base}
-  IMAGE_MAJOR=${IMAGE_MAJOR:-38}
+  IMAGE_MAJOR=${IMAGE_MAJOR:-39}
 
   echo "----------------------------------------"
   print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}..."

@@ -1,4 +1,4 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-38}"
+ARG IMAGE_MAJOR="${IMAGE_MAJOR:-39}"
 
 FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR}
 
@@ -16,14 +16,16 @@ RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/deve
 
 # Add Docker repo
 RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo && \
+  # This is certainly a good idea and won't break, it won't break it won't break it won't break
+  if [[ ${IMAGE_MAJOR} -eq "39" ]]; then sed -i "s/\$releasever/38/g" /etc/yum.repos.d/docker-ce.repo; fi && \
   rpm-ostree cleanup -m && \
   ostree container commit
 
-RUN if [[ $IMAGE_MAJOR -eq "37" ]]; then FONTS="google-noto-sans-cjk-hk-fonts google-noto-sans-cjk-jp-fonts google-noto-sans-cjk-kr-fonts google-noto-sans-cjk-sc-fonts google-noto-sans-cjk-tc-fonts google-noto-sans-cjk-ttc-fonts google-noto-serif-cjk-jp-fonts google-noto-serif-cjk-kr-fonts google-noto-serif-cjk-sc-fonts google-noto-serif-cjk-tc-fonts google-noto-serif-cjk-ttc-fonts"; FONTS_REMOVE=""; else FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; fi && \
+RUN if [[ ${IMAGE_MAJOR} -eq "38" ]]; then FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; else FONTS="default-fonts default-fonts-core default-fonts-cjk"; FONTS_REMOVE=""; fi && \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-  sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo && \
+  if [[ ${IMAGE_MAJOR} -eq "38" ]]; then sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo; else sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-cisco-openh264,rpmfusion-free{,-updates}}.repo; fi && \
   rpm-ostree install \
   distrobox \
   flatpak-builder \
