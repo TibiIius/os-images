@@ -11,7 +11,7 @@ RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh &&
   ostree container commit
 
 # Platformio Udev rules
-RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules && \
+RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules -o /etc/udev/rules.d/99-platformio-udev.rules && \
   ostree container commit
 
 # Add Docker repo
@@ -21,11 +21,10 @@ RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.
   rpm-ostree cleanup -m && \
   ostree container commit
 
-RUN if [[ ${IMAGE_MAJOR} -eq "38" ]]; then FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; else FONTS="default-fonts default-fonts-core default-fonts-cjk"; FONTS_REMOVE=""; fi && \
+RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; if [[ ${IMAGE_MAJOR} -eq "39" ]]; then FONTS_REMOVE="${FONTS_REMOVE} google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; fi && \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-  if [[ ${IMAGE_MAJOR} -eq "38" ]]; then sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-{cisco-openh264,modular,updates-modular},rpmfusion-free{,-updates}}.repo; else sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/{fedora-cisco-openh264,rpmfusion-free{,-updates}}.repo; fi && \
   rpm-ostree install \
   distrobox \
   flatpak-builder \
@@ -38,7 +37,7 @@ RUN if [[ ${IMAGE_MAJOR} -eq "38" ]]; then FONTS="google-noto-sans-cjk-fonts goo
   ${FONTS} \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
   docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
-  sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/rpmfusion-nonfree{,-updates}.repo && \
+  ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" "/usr/share/fonts/noto-cjk" && \
   sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
   systemctl enable rpm-ostreed-automatic.timer && \
   systemctl enable firstboot.service && \
