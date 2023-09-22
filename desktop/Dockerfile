@@ -41,7 +41,7 @@ RUN source /tmp/akmods/nvidia-vars && \
   xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \
   kernel-devel-${KERNEL_VERSION} \
   "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_AKMOD_VERSION}.fc${RELEASE}.rpm" \
-  nvidia-vaapi-driver \
+  nvidia-vaapi-driver libva-utils \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
