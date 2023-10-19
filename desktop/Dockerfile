@@ -1,15 +1,23 @@
 ARG IMAGE_MAJOR="${IMAGE_MAJOR:-39}"
 ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
+ARG NVIDIA_MAJOR_VERSION="${NVIDIA_MAJOR_VERSION:-535}"
+ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}-${NVIDIA_MAJOR_VERSION}"
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
+
+ARG NVIDIA_MAJOR_VERSION
+
+ENV NVIDIA_PACKAGE_NAME "nvidia"
 
 # Building NVIDIA kernel modules otherwise fails... Just why?
 RUN ln -s /usr/bin/rpm-ostree /usr/bin/dnf
 
 RUN rpm-ostree install fedora-repos-archive
 
-RUN rpm-ostree install \
+RUN RELEASE="$(rpm -E '%fedora.%_arch')" && \
+  rpm-ostree install \
   akmods \
+  akmod-${NVIDIA_PACKAGE_NAME}*:${NVIDIA_MAJOR_VERSION}.*.fc${RELEASE} \
   mock \
   xorg-x11-drv-nvidia{,-cuda,-devel,-kmodsrc,-power} \
   binutils \
@@ -18,8 +26,7 @@ RUN rpm-ostree install \
 # I totally know why this is needed
 RUN ln -s /usr/bin/ld.bfd /etc/alternatives/ld && ln -s /etc/alternatives/ld /usr/bin/ld
 
-RUN NVIDIA_PACKAGE_NAME="nvidia" \
-  RELEASE="$(rpm -E '%fedora.%_arch')" \
+RUN RELEASE="$(rpm -E '%fedora.%_arch')" \
   KERNEL_VERSION="$(rpm -q kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')" \
   NVIDIA_AKMOD_VERSION="$(basename "$(rpm -q "akmod-${NVIDIA_PACKAGE_NAME}" --queryformat '%{VERSION}-%{RELEASE}')" ".fc${RELEASE%%.*}")" && \
   chmod -R 1777 /tmp && \
@@ -34,6 +41,9 @@ RUN NVIDIA_FULL_VERSION="$(rpm -q "xorg-x11-drv-nvidia" --queryformat '%{EPOCH}:
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
 
+ARG UBLUE_AKMODS_TAG
+
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} /rpms/ /tmp/rpms
 COPY --from=builder /var/cache/akmods /tmp/akmods
 
 RUN source /tmp/akmods/nvidia-vars && \
@@ -42,6 +52,7 @@ RUN source /tmp/akmods/nvidia-vars && \
   kernel-devel-${KERNEL_VERSION} \
   "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_AKMOD_VERSION}.fc${RELEASE}.rpm" \
   nvidia-vaapi-driver libva-utils \
+  /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
