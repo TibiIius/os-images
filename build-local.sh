@@ -57,7 +57,7 @@ main() {
   print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}..."
   echo "----------------------------------------"
 
-  local __command="buildah bud -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" --format oci -t localhost/custom-silverblue-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
+  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" -t localhost/custom-silverblue-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
 
   print_debug "Running command: ${__command}"
   eval ${__command}
@@ -65,7 +65,7 @@ main() {
   local __exit_code=$?
 
   if [[ __exit_code -ne 0 ]]; then
-    print_error "Buildah returned a non-zero exit code trying to build image '${IMAGE}' with major version '${IMAGE_MAJOR}'. Exit code was: ${__exit_code}"
+    print_error "Docker returned a non-zero exit code trying to build image '${IMAGE}' with major version '${IMAGE_MAJOR}'. Exit code was: ${__exit_code}"
     exit 1
   fi
 }
