@@ -3,6 +3,9 @@ ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 ARG NVIDIA_MAJOR_VERSION="${NVIDIA_MAJOR_VERSION:-535}"
 ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}-${NVIDIA_MAJOR_VERSION}"
 
+# Hack to be able to use `COPY --from=$VARIABLE`
+FROM ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} as ublue-akmods-full-path
+
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR} as builder
 
 ARG NVIDIA_MAJOR_VERSION
@@ -41,18 +44,19 @@ RUN NVIDIA_FULL_VERSION="$(rpm -q "xorg-x11-drv-nvidia" --queryformat '%{EPOCH}:
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
 
-ARG UBLUE_AKMODS_TAG
+# Installs additional NVIDIA repositories for stuff like NVIDIA's Container Toolkit
+COPY --from=ublue-akmods-full-path /rpms/ /tmp/rpms
+RUN rpm-ostree install /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm && \
+  ostree container commit
 
-COPY --from=ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} /rpms/ /tmp/rpms
 COPY --from=builder /var/cache/akmods /tmp/akmods
-
 RUN source /tmp/akmods/nvidia-vars && \
   rpm-ostree install \
   xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \
   kernel-devel-${KERNEL_VERSION} \
   "/tmp/akmods/${NVIDIA_PACKAGE_NAME}/kmod-${NVIDIA_PACKAGE_NAME}-${KERNEL_VERSION}-${NVIDIA_AKMOD_VERSION}.fc${RELEASE}.rpm" \
   nvidia-vaapi-driver libva-utils \
-  /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm \
+  nvidia-container-toolkit \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
