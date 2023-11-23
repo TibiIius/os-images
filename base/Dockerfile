@@ -16,12 +16,10 @@ RUN curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/deve
 
 # Add Docker repo
 RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo && \
-  # This is certainly a good idea and won't break, it won't break it won't break it won't break
-  if [[ ${IMAGE_MAJOR} -eq "39" ]]; then sed -i "s/\$releasever/38/g" /etc/yum.repos.d/docker-ce.repo; fi && \
   rpm-ostree cleanup -m && \
   ostree container commit
 
-RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts"; if [[ ${IMAGE_MAJOR} -eq "39" ]]; then FONTS_REMOVE="${FONTS_REMOVE} google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; fi && \
+RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
