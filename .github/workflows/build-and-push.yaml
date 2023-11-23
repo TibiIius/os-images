@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_major: ["38", "39"]
+        image_major: ["39"]
         build_variant: ["base"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
@@ -73,7 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_major: ["38", "39"]
+        image_major: ["39"]
         build_variant: ["desktop", "laptop"]
     needs: build-and-push-base
     env:
