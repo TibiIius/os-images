@@ -27,7 +27,7 @@ jobs:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-      NVIDIA_MAJOR_VERSION: 535
+      NVIDIA_MAJOR_VERSION: 545
     steps:
       - uses: actions/checkout@v3
 
