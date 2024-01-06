@@ -24,6 +24,11 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora
   rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr mutter mutter-common gnome-control-center gnome-control-center-filesystem && \
   rm -f /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo
 
+# Fix laggy mouse cursor under Wayland (allows mouse cursor to update independent of the rest of the screen)
+# Also, setting MUTTER_DEBUG_FORCE_KMS_MODE is required for GNOMR VRR to work properly
+RUN echo MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0 >> /etc/environment && \
+  echo MUTTER_DEBUG_FORCE_KMS_MODE=simple >> /etc/environment
+
 RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
