@@ -57,7 +57,7 @@ main() {
   print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}..."
   echo "----------------------------------------"
 
-  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" -t localhost/custom-silverblue-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
+  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" -t ghcr.io/custom-silverblue-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
 
   print_debug "Running command: ${__command}"
   eval ${__command}
