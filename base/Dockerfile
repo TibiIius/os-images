@@ -1,4 +1,4 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-39}"
+ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
 
 FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR}
 

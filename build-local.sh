@@ -47,11 +47,11 @@ main() {
   fi
 
   if [[ -z ${IMAGE_MAJOR} ]]; then
-    print_warn "No major version specified, defaulting to 38"
+    print_warn "No major version specified, defaulting to 40"
   fi
 
   IMAGE=${IMAGE:-base}
-  IMAGE_MAJOR=${IMAGE_MAJOR:-39}
+  IMAGE_MAJOR=${IMAGE_MAJOR:-40}
 
   echo "----------------------------------------"
   print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}..."
