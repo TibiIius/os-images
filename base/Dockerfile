@@ -20,9 +20,11 @@ RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.
   ostree container commit
 
 # GNOME VRR (from https://github.com/ublue-os/bluefin/pull/481/files)
-RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-gnome-vrr-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
+# Disable on Fedora 40 as we will get VRR with 46 (hopefully)
+RUN [ "${IMAGE_MAJOR}" -lt "40" ] && \
+  { wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-gnome-vrr-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
   rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr mutter mutter-common gnome-control-center gnome-control-center-filesystem && \
-  rm -f /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo
+  rm -f /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo; } || true
 
 # Fix laggy mouse cursor under Wayland (allows mouse cursor to update independent of the rest of the screen)
 # Also, setting MUTTER_DEBUG_FORCE_KMS_MODE is required for GNOMR VRR to work properly
