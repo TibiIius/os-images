@@ -50,7 +50,6 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   nautilus-python \
   NetworkManager-sstp \
   NetworkManager-sstp-gnome \
-  openssl1.1 \
   neovim \
   smartmontools \
   ${FONTS} \
