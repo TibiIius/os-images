@@ -21,8 +21,9 @@ RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.
 
 # GNOME VRR (from https://github.com/ublue-os/bluefin/pull/481/files)
 # Disable on Fedora 40 as we will get VRR with 46 (hopefully)
+# hadolint ignore=SC2015
 RUN [ "${IMAGE_MAJOR}" -lt "40" ] && \
-  { wget https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-gnome-vrr-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
+  { curl -L https://copr.fedorainfracloud.org/coprs/kylegospo/gnome-vrr/repo/fedora-"${FEDORA_MAJOR_VERSION}"/kylegospo-gnome-vrr-fedora-"${FEDORA_MAJOR_VERSION}".repo -o /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo && \
   rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr mutter mutter-common gnome-control-center gnome-control-center-filesystem && \
   rm -f /etc/yum.repos.d/_copr_kylegospo-gnome-vrr.repo; } || true
 
@@ -34,6 +35,7 @@ RUN echo MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0 >> /etc/environment && \
 # Add `disk` group to the system
 RUN grep -E '^disk:' /usr/lib/group >> /etc/group
 
+# hadolint ignore=SC2115
 RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; \
   rpm-ostree override remove firefox firefox-langpacks toolbox power-profiles-daemon ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
