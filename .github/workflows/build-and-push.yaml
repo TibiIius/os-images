@@ -56,6 +56,7 @@ jobs:
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
             NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
           file: ./${{ matrix.build_variant }}/Dockerfile
+          context: ./${{ matrix.build_variant }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -103,6 +104,7 @@ jobs:
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
             NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
           file: ./${{ matrix.build_variant }}/Dockerfile
+          context: ./${{ matrix.build_variant }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
