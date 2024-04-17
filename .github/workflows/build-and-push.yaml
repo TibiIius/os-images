@@ -1,6 +1,9 @@
 name: build-and-push
 on:
   workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - "**/README.md"
   schedule:
     - cron: "0 0 * * *"
   push:
@@ -25,43 +28,37 @@ jobs:
         build_variant: ["base"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
-      IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
+      IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
       NVIDIA_MAJOR_VERSION: 550
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build ${{ env.IMAGE_NAME }}
-        id: build_image
-        uses: redhat-actions/buildah-build@v2.11
+      - name: Login to registry
+        uses: docker/login-action@v2.2.0
         with:
-          containerfiles: |
-            ./${{ matrix.build_variant }}/Dockerfile
-          build-args: |
-            IMAGE_MAJOR=${{ matrix.image_major }}
-            NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
-          context: ./${{ matrix.build_variant }}
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          oci: true
-
-      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
-      # https://github.com/macbre/push-to-ghcr/issues/12
-      - name: Lowercase registry fix
-        id: registry_case
-        uses: ASzc/change-string-case-action@v5
-        with:
-          string: ${{ env.IMAGE_REGISTRY }}
-
-      - name: Push to ghcr
-        uses: redhat-actions/push-to-registry@v2.7
-        id: push
-        with:
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          registry: ${{ steps.registry_case.outputs.lowercase }}
+          registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4.6.0
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.IMAGE_MAJOR }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          build-args: |
+            IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
+            NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
+          file: ./${{ matrix.build_variant }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   build-and-push-variant:
     name: Build and push image variants
@@ -78,38 +75,34 @@ jobs:
     needs: build-and-push-base
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
-      IMAGE_TAGS: ${{ matrix.image_major }} ${{ matrix.image_major }}-${{ github.sha }}
+      IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+      NVIDIA_MAJOR_VERSION: 550
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build ${{ env.IMAGE_NAME }}
-        id: build_image
-        uses: redhat-actions/buildah-build@v2.11
+      - name: Login to registry
+        uses: docker/login-action@v2.2.0
         with:
-          containerfiles: |
-            ./${{ matrix.build_variant }}/Dockerfile
-          build-args: |
-            IMAGE_MAJOR=${{ matrix.image_major }}
-          context: ./${{ matrix.build_variant }}
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          oci: true
-
-      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
-      # https://github.com/macbre/push-to-ghcr/issues/12
-      - name: Lowercase registry fix
-        id: registry_case
-        uses: ASzc/change-string-case-action@v5
-        with:
-          string: ${{ env.IMAGE_REGISTRY }}
-
-      - name: Push to ghcr
-        uses: redhat-actions/push-to-registry@v2.7
-        id: push
-        with:
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ env.IMAGE_TAGS }}
-          registry: ${{ steps.registry_case.outputs.lowercase }}
+          registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4.6.0
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.IMAGE_MAJOR }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          build-args: |
+            IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
+            NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
+          file: ./${{ matrix.build_variant }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
