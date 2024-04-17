@@ -35,7 +35,7 @@ RUN echo MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0 >> /etc/environment && \
 RUN grep -E '^disk:' /usr/lib/group >> /etc/group
 
 RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; \
-  rpm-ostree override remove firefox firefox-langpacks toolbox ${FONTS_REMOVE} && \
+  rpm-ostree override remove firefox firefox-langpacks toolbox power-profiles-daemon ${FONTS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   rpm-ostree install \
@@ -52,6 +52,7 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   NetworkManager-sstp-gnome \
   neovim \
   smartmontools \
+  tuned tuned-ppd tuned-utils tuned-utils-systemtap tuned-profiles-atomic \
   ${FONTS} \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
   vagrant vagrant-libvirt \
@@ -61,6 +62,7 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   systemctl enable rpm-ostreed-automatic.timer && \
   systemctl enable firstboot.service && \
   systemctl enable docker.service && \
+  systemctl enable tuned.service && \
   # virt-install needs unbound, but that creates a key in /var/unbound
   # rpm-ostree doesn't like that, so we need to remove it
   rm -rf /var/* && \
