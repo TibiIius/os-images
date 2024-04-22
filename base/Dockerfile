@@ -53,6 +53,7 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   NetworkManager-sstp \
   NetworkManager-sstp-gnome \
   neovim \
+  p7zip \
   smartmontools \
   tuned tuned-ppd tuned-utils tuned-utils-systemtap tuned-profiles-atomic \
   ${FONTS} \
