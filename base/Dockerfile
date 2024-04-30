@@ -42,7 +42,7 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   rpm-ostree install \
   distrobox \
-  gcc \
+  gcc mold \
   flatpak-builder \
   gnome-tweaks \
   zsh \
