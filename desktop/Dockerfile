@@ -1,7 +1,6 @@
 ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
 ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
-ARG NVIDIA_MAJOR_VERSION="${NVIDIA_MAJOR_VERSION:-550}"
-ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}-${NVIDIA_MAJOR_VERSION}"
+ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}"
 
 # Hack to be able to use `COPY --from=$VARIABLE`
 FROM ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} as ublue-akmods-full-path
@@ -14,7 +13,7 @@ ENV NVIDIA_MAJOR_VERSION $NVIDIA_MAJOR_VERSION
 # Installs additional NVIDIA repositories for stuff like NVIDIA's Container Toolkit
 COPY --from=ublue-akmods-full-path /rpms/ /tmp/rpms
 
-RUN source /tmp/rpms/kmods/nvidia-vars.${NVIDIA_MAJOR_VERSION} && \
+RUN source /tmp/rpms/kmods/nvidia-vars && \
   rpm-ostree install /tmp/rpms/ublue-os/ublue-os-nvidia*.rpm && \
   rpm-ostree install \
   xorg-x11-drv-${NVIDIA_PACKAGE_NAME}{,-cuda,-devel,-kmodsrc,-power}-${NVIDIA_FULL_VERSION} \

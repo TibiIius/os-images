@@ -30,7 +30,6 @@ jobs:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-      NVIDIA_MAJOR_VERSION: 550
     steps:
       - uses: actions/checkout@v4
 
@@ -54,7 +53,6 @@ jobs:
         with:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
-            NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
           file: ./${{ matrix.build_variant }}/Dockerfile
           context: ./${{ matrix.build_variant }}
           push: true
@@ -78,7 +76,6 @@ jobs:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-      NVIDIA_MAJOR_VERSION: 550
     steps:
       - uses: actions/checkout@v4
 
@@ -102,7 +99,6 @@ jobs:
         with:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
-            NVIDIA_MAJOR_VERSION=${{ env.NVIDIA_MAJOR_VERSION }}
           file: ./${{ matrix.build_variant }}/Dockerfile
           context: ./${{ matrix.build_variant }}
           push: true
