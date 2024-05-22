@@ -7,6 +7,8 @@ FROM ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} as ublue-akmods-full-pat
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
 
+COPY etc/ /etc/
+
 ARG NVIDIA_MAJOR_VERSION
 ENV NVIDIA_MAJOR_VERSION $NVIDIA_MAJOR_VERSION
 
