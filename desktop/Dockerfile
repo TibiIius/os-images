@@ -43,6 +43,7 @@ RUN source /tmp/rpms/kmods/nvidia-vars && \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
   ln -s /etc/alternatives/ld /usr/bin/ld && \
+  ln -s /usr/lib/libnvidia-ml.so.1 /usr/lib/libnvidia-ml.so && \
   rm -rf /tmp/* /var/* && \
   rpm-ostree cleanup -m && \
   ostree container commit
