@@ -27,14 +27,18 @@ RUN source /tmp/rpms/kmods/nvidia-vars && \
   mesa-vulkan-drivers.i686 \
   nvidia-driver \
   nvidia-driver-cuda \
+  nvidia-driver-cuda-libs \
   nvidia-driver-cuda-libs.i686 \
+  nvidia-driver-libs \
   nvidia-driver-libs.i686 \
+  nvidia-driver-NVML \
   nvidia-driver-NVML.i686 \
   nvidia-driver-NvFBCOpenGL \
   nvidia-modprobe \
   nvidia-persistenced \
   nvidia-settings \
   nvidia-container-toolkit \
+  cuda-devel \
   /tmp/rpms/kmods/kmod-nvidia-${KERNEL_VERSION}-${NVIDIA_AKMOD_VERSION}.fc${RELEASE}.rpm \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
   ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
