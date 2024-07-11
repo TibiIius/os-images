@@ -48,7 +48,6 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   zsh \
   libratbag-ratbagd \
   openssl \
-  podman-compose \
   steam-devices \
   nautilus-python \
   NetworkManager-sstp \
