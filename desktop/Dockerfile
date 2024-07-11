@@ -3,14 +3,14 @@ ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}"
 
 # Hack to be able to use `COPY --from=$VARIABLE`
-FROM ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} as ublue-akmods-full-path
+FROM ghcr.io/ublue-os/akmods-nvidia:${UBLUE_AKMODS_TAG} AS ublue-akmods-full-path
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
 
 COPY etc/ /etc/
 
 ARG NVIDIA_MAJOR_VERSION
-ENV NVIDIA_MAJOR_VERSION $NVIDIA_MAJOR_VERSION
+ENV NVIDIA_MAJOR_VERSION=$NVIDIA_MAJOR_VERSION
 
 # Installs additional NVIDIA repositories for stuff like NVIDIA's Container Toolkit
 COPY --from=ublue-akmods-full-path /rpms/ /tmp/rpms
@@ -24,6 +24,9 @@ RUN source /tmp/rpms/kmods/nvidia-vars && \
   rpm-ostree install \
   kernel-devel-${KERNEL_VERSION} \
   libva-nvidia-driver \
+  libnvidia-fbc \
+  libnvidia-ml \
+  libnvidia-ml.i686 \
   mesa-vulkan-drivers.i686 \
   nvidia-driver \
   nvidia-driver-cuda \
@@ -31,9 +34,6 @@ RUN source /tmp/rpms/kmods/nvidia-vars && \
   nvidia-driver-cuda-libs.i686 \
   nvidia-driver-libs \
   nvidia-driver-libs.i686 \
-  nvidia-driver-NVML \
-  nvidia-driver-NVML.i686 \
-  nvidia-driver-NvFBCOpenGL \
   nvidia-modprobe \
   nvidia-persistenced \
   nvidia-settings \
