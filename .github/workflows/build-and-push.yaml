@@ -49,7 +49,7 @@ jobs:
             type=raw,value=${{ env.IMAGE_MAJOR }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.2.1
+        uses: docker/build-push-action@v6.7.0
         with:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
@@ -95,7 +95,7 @@ jobs:
             type=raw,value=${{ env.IMAGE_MAJOR }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.2.1
+        uses: docker/build-push-action@v6.7.0
         with:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
