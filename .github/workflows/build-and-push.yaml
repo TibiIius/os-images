@@ -16,7 +16,7 @@ on:
 jobs:
   build-and-push-base:
     name: Build and push base image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -61,7 +61,7 @@ jobs:
 
   build-and-push-variant:
     name: Build and push image variants
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
