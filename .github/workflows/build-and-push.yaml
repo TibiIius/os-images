@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_major: ["40"]
+        image_major: ["40", "41"]
         build_variant: ["base"]
     env:
       IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
