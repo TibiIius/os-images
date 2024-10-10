@@ -1,4 +1,4 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
+ARG IMAGE_MAJOR
 ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
 ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}"
 
@@ -41,8 +41,8 @@ RUN source /tmp/rpms/kmods/nvidia-vars && \
   cuda-devel \
   /tmp/rpms/kmods/kmod-nvidia-${KERNEL_VERSION}-${NVIDIA_AKMOD_VERSION}.fc${RELEASE}.rpm \
   openrgb-udev-rules i2c-tools libi2c libi2c-devel rEFInd && \
-  ln -s /usr/bin/ld.bfd /etc/alternatives/ld && \
-  ln -s /etc/alternatives/ld /usr/bin/ld && \
+  if [ ! -f /etc/alternatives/ld ]; then ln -s /usr/bin/ld.bfd /etc/alternatives/ld; fi && \
+  if [ ! -f /usr/bin/ld ]; then ln -s /etc/alternatives/ld /usr/bin/ld; fi && \
   ln -s /usr/lib/libnvidia-ml.so.1 /usr/lib/libnvidia-ml.so && \
   rm -rf /tmp/* /var/* && \
   rpm-ostree cleanup -m && \

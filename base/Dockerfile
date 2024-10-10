@@ -1,4 +1,4 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
+ARG IMAGE_MAJOR
 
 FROM quay.io/fedora-ostree-desktops/silverblue:${IMAGE_MAJOR}
 
@@ -36,8 +36,8 @@ RUN echo MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0 >> /etc/environment && \
 RUN grep -E '^disk:' /usr/lib/group >> /etc/group
 
 # hadolint ignore=SC2115
-RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; \
-  rpm-ostree override remove firefox firefox-langpacks toolbox power-profiles-daemon ${FONTS_REMOVE} && \
+RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; [ ${IMAGE_MAJOR} -lt 41 ] && PKGS_REMOVE="${PKGS_REMOVE} power-profiles-daemon"; \
+  rpm-ostree override remove firefox firefox-langpacks toolbox ${PKGS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
   rpm-ostree install \
@@ -56,7 +56,7 @@ RUN FONTS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; FONTS_REMOVE
   p7zip \
   smartmontools \
   tuned tuned-ppd tuned-utils tuned-utils-systemtap tuned-profiles-atomic \
-  ${FONTS} \
+  ${PKGS} \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
   vagrant vagrant-libvirt \
   docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \

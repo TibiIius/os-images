@@ -1,4 +1,4 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
+ARG IMAGE_MAJOR
 
 FROM ghcr.io/tibiiius/custom-silverblue-base:${IMAGE_MAJOR}
 
