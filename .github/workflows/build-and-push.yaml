@@ -25,10 +25,12 @@ jobs:
       fail-fast: false
       matrix:
         image_major: ["41"]
+        image_flavour: ["silverblue", kinoite]
         build_variant: ["base"]
     env:
-      IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
+      IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
+      IMAGE_FLAVOUR: ${{ matrix.image_flavour }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v4
@@ -70,11 +72,13 @@ jobs:
       fail-fast: false
       matrix:
         image_major: ["41"]
+        image_flavour: ["silverblue", "kinoite"]
         build_variant: ["desktop", "laptop"]
     needs: build-and-push-base
     env:
-      IMAGE_NAME: custom-silverblue-${{ matrix.build_variant }}
+      IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
+      IMAGE_FLAVOUR: ${{ matrix.image_flavour }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v4

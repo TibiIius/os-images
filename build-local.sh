@@ -6,7 +6,8 @@ print_help() {
 Options:
 -m, --major <major>:    Major version of the image
 -h, --help:             Print this help message
--i, --image:            Image to build (base, desktop, laptop)"
+-i, --image:            Image to build (base, desktop, laptop)
+-f, --flavour           Image flavour to build (silverblue, kinoite)"
 }
 
 # Use this if you want to print a normal log message
@@ -51,13 +52,18 @@ main() {
     exit 1
   fi
 
+  if [[ -z ${IMAGE_FLAVOUR} ]]; then
+    print_error "No image flavour specified, exiting"
+    exit 1
+  fi
+
   IMAGE=${IMAGE:-base}
 
   echo "----------------------------------------"
-  print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}..."
+  print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR} and flavour ${IMAGE_FLAVOUR}..."
   echo "----------------------------------------"
 
-  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" -t ghcr.io/tibiiius/custom-silverblue-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
+  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" --build-arg IMAGE_FLAVOUR="${IMAGE_FLAVOUR}" -t ghcr.io/tibiiius/custom-"${IMAGE_FLAVOUR}"-"${IMAGE}":"${IMAGE_MAJOR}" ./"${IMAGE}""
 
   print_debug "Running command: ${__command}"
   eval ${__command}
@@ -81,6 +87,11 @@ while [[ $# -gt 0 ]]; do
     -i|--image)
       shift
       IMAGE=$1
+      shift
+      ;;
+    -f|--flavour)
+      shift
+      IMAGE_FLAVOUR=$1
       shift
       ;;
     -h|--help)

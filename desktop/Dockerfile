@@ -1,5 +1,6 @@
 ARG IMAGE_MAJOR
-ARG BASE_IMAGE="ghcr.io/tibiiius/custom-silverblue-base"
+ARG IMAGE_FLAVOUR
+ARG BASE_IMAGE="ghcr.io/tibiiius/custom-${IMAGE_FLAVOUR}-base"
 ARG UBLUE_AKMODS_TAG="main-${IMAGE_MAJOR}"
 
 # Hack to be able to use `COPY --from=$VARIABLE`
