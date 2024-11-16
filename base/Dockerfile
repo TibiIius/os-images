@@ -26,6 +26,9 @@ RUN curl -L https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.
 RUN if [[ ${IMAGE_FLAVOUR} = "silverblue" ]]; then echo MUTTER_DEBUG_ENABLE_ATOMIC_KMS=0 >> /etc/environment && \
   echo MUTTER_DEBUG_FORCE_KMS_MODE=simple >> /etc/environment; fi
 
+# Enable HDR
+RUN if [[ ${IMAGE_FLAVOUR} = "kinoite" ]]; then echo KWIN_DRM_ALLOW_NVIDIA_COLORSPACE=1 >> /etc/environment; fi
+
 # Add `disk` group to the system
 RUN grep -E '^disk:' /usr/lib/group >> /etc/group
 
