@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         image_major: ["41"]
-        image_flavour: ["silverblue", kinoite]
+        image_flavour: ["kinoite"]
         build_variant: ["base"]
     env:
       IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
@@ -73,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         image_major: ["41"]
-        image_flavour: ["silverblue", "kinoite"]
+        image_flavour: ["kinoite"]
         build_variant: ["desktop", "laptop"]
     needs: build-and-push-base
     env:
