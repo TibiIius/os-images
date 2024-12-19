@@ -50,6 +50,7 @@ RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="
   p7zip \
   smartmontools \
   tuned tuned-ppd tuned-utils tuned-utils-systemtap tuned-profiles-atomic \
+  qt5-qtwebchannel-devel qt5-qtwebsockets-devel \
   ${PKGS} \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
   vagrant vagrant-libvirt \
