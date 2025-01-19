@@ -37,6 +37,8 @@ RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="
   rpm-ostree override remove firefox firefox-langpacks toolbox ${PKGS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+  # Install Veracrypt
+  rpm-ostree install https://launchpad.net/veracrypt/trunk/1.26.14/+download/veracrypt-1.26.14-Fedora-40-x86_64.rpm && \
   rpm-ostree install \
   distrobox \
   gcc mold \
