@@ -74,7 +74,7 @@ jobs:
       matrix:
         image_major: ["41"]
         image_flavour: ["kinoite"]
-        build_variant: ["desktop", "laptop"]
+        build_variant: ["laptop"]
     needs: build-and-push-base
     env:
       IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
