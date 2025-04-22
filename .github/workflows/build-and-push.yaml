@@ -28,6 +28,11 @@ jobs:
         image: ["workstation"]
         image_flavour: ["silverblue"]
         image_kind: ["main", "nvidia"]
+        include:
+          - image: "server"
+            image_major: "stable"
+            image_flavour: "ucore-hci"
+            image_kind: "zfs"
     env:
       IMAGE: ${{ matrix.image }}
       IMAGE_NAME: ${{ matrix.image }}-${{ matrix.image_flavour }}-${{ matrix.image_kind }}
