@@ -16,7 +16,7 @@ COPY etc/ /etc/
 COPY usr/ /usr/
 
 COPY /nvidia /tmp/nvidia
-RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then mv /tmp/nvidia/* / && \
+RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then mv /tmp/nvidia/**/* / && \
   ostree container commit; fi
 
 RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh && \
