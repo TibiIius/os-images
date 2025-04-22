@@ -14,8 +14,8 @@ on:
       - "build-local.sh"
 
 jobs:
-  build-and-push-base:
-    name: Build and push base image
+  build-and-push:
+    name: Build and push images
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -24,13 +24,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_major: ["41"]
-        image_flavour: ["kinoite", "silverblue"]
-        build_variant: ["base"]
+        image_major: ["41", "42"]
+        image: ["workstation"]
+        image_flavour: ["silverblue"]
+        image_kind: ["main", "nvidia"]
     env:
-      IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
+      IMAGE: ${{ matrix.image }}
+      IMAGE_NAME: ${{ matrix.image }}-${{ matrix.image_flavour }}-${{ matrix.image_kind }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_FLAVOUR: ${{ matrix.image_flavour }}
+      IMAGE_KIND: ${{ matrix.image_kind }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v4
@@ -56,57 +59,9 @@ jobs:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
             IMAGE_FLAVOUR=${{ env.IMAGE_FLAVOUR }}
-          file: ./${{ matrix.build_variant }}/Dockerfile
-          context: ./${{ matrix.build_variant }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  build-and-push-variant:
-    name: Build and push image variants
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    strategy:
-      fail-fast: false
-      matrix:
-        image_major: ["41"]
-        image_flavour: ["kinoite", "silverblue"]
-        build_variant: ["laptop"]
-    needs: build-and-push-base
-    env:
-      IMAGE_NAME: custom-${{ matrix.image_flavour }}-${{ matrix.build_variant }}
-      IMAGE_MAJOR: ${{ matrix.image_major }}
-      IMAGE_FLAVOUR: ${{ matrix.image_flavour }}
-      IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Login to registry
-        uses: docker/login-action@v3.3.0
-        with:
-          registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5.6.1
-        with:
-          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ env.IMAGE_MAJOR }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6.10.0
-        with:
-          build-args: |
-            IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
-            IMAGE_FLAVOUR=${{ env.IMAGE_FLAVOUR }}
-          file: ./${{ matrix.build_variant }}/Dockerfile
-          context: ./${{ matrix.build_variant }}
+            IMAGE_KIND=${{ env.IMAGE_KIND }}
+          file: ./${{ env.IMAGE }}/Dockerfile
+          context: ./${{ env.IMAGE }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

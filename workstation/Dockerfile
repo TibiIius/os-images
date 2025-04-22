@@ -1,13 +1,23 @@
-ARG IMAGE_MAJOR="${IMAGE_MAJOR:-40}"
+ARG IMAGE_MAJOR=${IMAGE_MAJOR:-"latest"}
+ARG IMAGE_FLAVOUR=${IMAGE_FLAVOUR:-"base"}
+ARG IMAGE_KIND=${IMAGE_KIND:-"main"}
+ARG BASE_IMAGE="ghcr.io/ublue-os/${IMAGE_FLAVOUR}-${IMAGE_KIND}"
+
+FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
+
+ARG IMAGE_MAJOR
+ENV IMAGE_MAJOR=${IMAGE_MAJOR}
 ARG IMAGE_FLAVOUR
-
-FROM quay.io/fedora-ostree-desktops/${IMAGE_FLAVOUR}:${IMAGE_MAJOR}
-
-ARG IMAGE_MAJOR=${IMAGE_MAJOR}
-ARG IMAGE_FLAVOUR=${IMAGE_FLAVOUR}
+ENV IMAGE_FLAVOUR=${IMAGE_FLAVOUR}
+ARG IMAGE_KIND
+ENV IMAGE_KIND=${IMAGE_KIND}
 
 COPY etc/ /etc/
 COPY usr/ /usr/
+
+COPY /nvidia /tmp/nvidia
+RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then mv /tmp/nvidia/* && \
+  ostree container commit; fi
 
 RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh && \
   ostree container commit
@@ -33,7 +43,7 @@ RUN if [[ ${IMAGE_FLAVOUR} = "kinoite" ]]; then echo KWIN_DRM_ALLOW_NVIDIA_COLOR
 RUN grep -E '^disk:' /usr/lib/group >> /etc/group
 
 # hadolint ignore=SC2115
-RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="google-noto-sans-cjk-vf-fonts google-noto-sans-mono-cjk-vf-fonts google-noto-serif-cjk-vf-fonts default-fonts-cjk-sans default-fonts-cjk-serif default-fonts-cjk-mono"; [ ${IMAGE_MAJOR} -lt 41 ] && PKGS_REMOVE="${PKGS_REMOVE} power-profiles-daemon"; [ ${IMAGE_FLAVOUR} = "silverblue" ] && PKGS="gnome-tweaks"; \
+RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; [ ${IMAGE_MAJOR} -lt 41 ] && PKGS_REMOVE="${PKGS_REMOVE} power-profiles-daemon"; [ ${IMAGE_FLAVOUR} = "silverblue" ] && PKGS="gnome-tweaks"; \
   rpm-ostree override remove firefox firefox-langpacks toolbox ${PKGS_REMOVE} && \
   rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
   https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
@@ -48,15 +58,16 @@ RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="
   openssl \
   steam-devices \
   nautilus-python \
-  neovim \
   p7zip \
   smartmontools \
   tuned tuned-ppd tuned-utils tuned-utils-systemtap tuned-profiles-atomic \
-  qt5-qtwebchannel-devel qt5-qtwebsockets-devel \
   ${PKGS} \
   virt-install libvirt-daemon-config-network libvirt-daemon-kvm qemu-kvm virt-manager virt-viewer guestfs-tools python3-libguestfs virt-top \
   vagrant vagrant-libvirt \
-  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
+  openrgb-udev-rules i2c-tools libi2c libi2c-devel && \
+  if [ ! -f /etc/alternatives/ld ]; then ln -s /usr/bin/ld.bfd /etc/alternatives/ld; fi && \
+  if [ ! -f /usr/bin/ld ]; then ln -s /etc/alternatives/ld /usr/bin/ld; fi && \
   ln -s "/usr/share/fonts/google-noto-sans-cjk-fonts" "/usr/share/fonts/noto-cjk" && \
   sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf && \
   systemctl enable rpm-ostreed-automatic.timer && \
@@ -68,3 +79,10 @@ RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; PKGS_REMOVE="
   rm -rf /var/* && \
   rpm-ostree cleanup -m && \
   ostree container commit
+
+# Add NVIDIA install script only at build time and only if IMAGE_KIND is nvidia
+COPY install-nvidia.sh /tmp/install-nvidia.sh
+
+RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then chmod +x /tmp/install-nvidia.sh && \
+  /tmp/install-nvidia.sh && \
+  ostree container commit; fi
