@@ -6,7 +6,6 @@ FROM ghcr.io/ublue-os/${IMAGE_FLAVOUR}:${IMAGE_MAJOR}
 RUN rpm-ostree install \
   borgbackup \
   htop \
-  nfs-utils \
   policycoreutils-python-utils \
   powertop \
   smartmontools \
