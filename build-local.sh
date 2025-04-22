@@ -7,8 +7,7 @@ Options:
 -m, --major <major>:    Major version of the image
 -h, --help:             Print this help message
 -i, --image:            Image to build (workstation, server)
--f, --flavour           Image flavour to build (silverblue, kinoite)
--k, --kind              Image kind to build (main, nvidia)"
+-f, --flavour           Image flavour to build (silverblue-main, kinoite-nvidia)"
 }
 
 # Use this if you want to print a normal log message
@@ -58,18 +57,13 @@ main() {
     exit 1
   fi
 
-  if [[ -z ${IMAGE_KIND} ]]; then
-    print_error "No image kind specified, defaulting to main"
-  fi
-
   IMAGE=${IMAGE:-base}
-  IMAGE_KIND=${IMAGE_KIND:-main}
 
   echo "----------------------------------------"
-  print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR}, kind ${IMAGE_KIND} and flavour ${IMAGE_FLAVOUR}..."
+  print_msg "Building '${IMAGE}' image with major version ${IMAGE_MAJOR} and flavour ${IMAGE_FLAVOUR}..."
   echo "----------------------------------------"
 
-  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_KIND=${IMAGE_KIND} --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" --build-arg IMAGE_FLAVOUR="${IMAGE_FLAVOUR}" -t ghcr.io/tibiiius/"${IMAGE}"-"${IMAGE_FLAVOUR}"-"${IMAGE_KIND}":"${IMAGE_MAJOR}" ./"${IMAGE}""
+  local __command="docker build -f ./"${IMAGE}"/Dockerfile --build-arg IMAGE_MAJOR="${IMAGE_MAJOR}" --build-arg IMAGE_FLAVOUR="${IMAGE_FLAVOUR}" -t ghcr.io/tibiiius/"${IMAGE}"-"${IMAGE_FLAVOUR}":"${IMAGE_MAJOR}" ./"${IMAGE}""
 
   print_debug "Running command: ${__command}"
   eval ${__command}
@@ -98,11 +92,6 @@ while [[ $# -gt 0 ]]; do
     -f|--flavour)
       shift
       IMAGE_FLAVOUR=$1
-      shift
-      ;;
-    -k|--kind)
-      shift
-      IMAGE_KIND=$1
       shift
       ;;
     -h|--help)

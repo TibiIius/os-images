@@ -1,8 +1,7 @@
 ARG IMAGE_MAJOR=${IMAGE_MAJOR:-"testing"}
-ARG IMAGE_KIND=${IMAGE_FLAVOUR:-"zfs"}
 ARG IMAGE_FLAVOUR=${IMAGE_KIND:-"fedora-coreos"}
 
-FROM ghcr.io/ublue-os/${IMAGE_FLAVOUR}:${IMAGE_MAJOR}-${IMAGE_KIND}
+FROM ghcr.io/ublue-os/${IMAGE_FLAVOUR}:${IMAGE_MAJOR}
 
 RUN rpm-ostree install \
   borgbackup \

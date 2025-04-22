@@ -26,19 +26,16 @@ jobs:
       matrix:
         image_major: ["41", "42"]
         image: ["workstation"]
-        image_flavour: ["silverblue"]
-        image_kind: ["main", "nvidia"]
+        image_flavour: ["silverblue-main", "silverblue-nvidia"]
         include:
           - image: "server"
-            image_major: "stable"
+            image_major: "stable-zfs"
             image_flavour: "ucore-hci"
-            image_kind: "zfs"
     env:
       IMAGE: ${{ matrix.image }}
-      IMAGE_NAME: ${{ matrix.image }}-${{ matrix.image_flavour }}-${{ matrix.image_kind }}
+      IMAGE_NAME: ${{ matrix.image }}-${{ matrix.image_flavour }}
       IMAGE_MAJOR: ${{ matrix.image_major }}
       IMAGE_FLAVOUR: ${{ matrix.image_flavour }}
-      IMAGE_KIND: ${{ matrix.image_kind }}
       IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +61,6 @@ jobs:
           build-args: |
             IMAGE_MAJOR=${{ env.IMAGE_MAJOR }}
             IMAGE_FLAVOUR=${{ env.IMAGE_FLAVOUR }}
-            IMAGE_KIND=${{ env.IMAGE_KIND }}
           file: ./${{ env.IMAGE }}/Dockerfile
           context: ./${{ env.IMAGE }}
           push: true

@@ -1,7 +1,6 @@
 ARG IMAGE_MAJOR=${IMAGE_MAJOR:-"latest"}
-ARG IMAGE_FLAVOUR=${IMAGE_FLAVOUR:-"base"}
-ARG IMAGE_KIND=${IMAGE_KIND:-"main"}
-ARG BASE_IMAGE="ghcr.io/ublue-os/${IMAGE_FLAVOUR}-${IMAGE_KIND}"
+ARG IMAGE_FLAVOUR=${IMAGE_FLAVOUR:-"base-main"}
+ARG BASE_IMAGE="ghcr.io/ublue-os/${IMAGE_FLAVOUR}"
 
 FROM ${BASE_IMAGE}:${IMAGE_MAJOR}
 
@@ -9,14 +8,12 @@ ARG IMAGE_MAJOR
 ENV IMAGE_MAJOR=${IMAGE_MAJOR}
 ARG IMAGE_FLAVOUR
 ENV IMAGE_FLAVOUR=${IMAGE_FLAVOUR}
-ARG IMAGE_KIND
-ENV IMAGE_KIND=${IMAGE_KIND}
 
 COPY etc/ /etc/
 COPY usr/ /usr/
 
 COPY /nvidia /tmp/nvidia
-RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then mv /tmp/nvidia/**/* / && \
+RUN if [[ "${IMAGE_FLAVOUR}" =~ nvidia$ ]]; then mv /tmp/nvidia/**/* / && \
   ostree container commit; fi
 
 RUN chmod +x /usr/libexec/firstboot/run /usr/libexec/firstboot/scripts.d/*.sh && \
@@ -80,9 +77,8 @@ RUN PKGS="google-noto-sans-cjk-fonts google-noto-serif-cjk-fonts"; [ ${IMAGE_MAJ
   rpm-ostree cleanup -m && \
   ostree container commit
 
-# Add NVIDIA install script only at build time and only if IMAGE_KIND is nvidia
+# Add NVIDIA install script only at build time and only if IMAGE_FLAVOUR has nvidia in its name
 COPY install-nvidia.sh /tmp/install-nvidia.sh
-
-RUN if [[ "${IMAGE_KIND}" == "nvidia" ]]; then chmod +x /tmp/install-nvidia.sh && \
+RUN if [[ "${IMAGE_FLAVOUR}" =~ nvidia$ ]]; then chmod +x /tmp/install-nvidia.sh && \
   /tmp/install-nvidia.sh && \
   ostree container commit; fi
