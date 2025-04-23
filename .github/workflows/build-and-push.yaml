@@ -26,7 +26,7 @@ jobs:
       matrix:
         image_major: ["41", "42"]
         image: ["workstation"]
-        image_flavour: ["silverblue-main", "silverblue-nvidia"]
+        image_flavour: ["silverblue-main"]
         include:
           - image: "server"
             image_major: "stable-zfs"
