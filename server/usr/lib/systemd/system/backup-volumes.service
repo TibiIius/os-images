@@ -4,6 +4,6 @@ Description=Backup docker volumes
 User=root
 Group=root
 Type=simple
-ExecStart=/usr/local/bin/backup-volumes
+ExecStart=/usr/bin/backup-volumes
 [Install]
 WantedBy=timers.target
