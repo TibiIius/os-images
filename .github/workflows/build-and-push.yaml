@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_major: ["41", "42"]
+        image_major: ["42"]
         image: ["workstation"]
         image_flavour: ["silverblue-main"]
         include:
