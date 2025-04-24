@@ -63,6 +63,6 @@ jobs:
             IMAGE_FLAVOUR=${{ env.IMAGE_FLAVOUR }}
           file: ./${{ env.IMAGE }}/Dockerfile
           context: ./${{ env.IMAGE }}
-          push: true
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
