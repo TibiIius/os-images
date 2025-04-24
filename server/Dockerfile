@@ -17,5 +17,7 @@ RUN rpm-ostree install \
   rpm-ostree cleanup -m
 
 RUN systemctl disable firewalld.service && \
+  systemctl disable zfs-import-cache.service && \
+  systemctl enable zfs-import-scan.service && \
   systemctl enable backup-volumes.timer && \
   ostree container commit
