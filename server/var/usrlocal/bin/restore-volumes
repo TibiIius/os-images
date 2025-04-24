@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ROOT_DIR=/var/lib/docker/volumes/
 RESTORE_DIR=/var/mnt/storage/backups/server/volumes/volumes-root/
 

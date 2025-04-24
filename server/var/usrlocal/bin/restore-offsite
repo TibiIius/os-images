@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 if [[ ! $(lsblk | grep /var/mnt/backup) ]]; then
   echo "Backup drive not mounted!"
   exit 1

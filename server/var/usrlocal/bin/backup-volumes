@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ROOT_DIR=/var/lib/docker/volumes/
 
 if [[ -d $ROOT_DIR ]]; then
@@ -7,7 +9,7 @@ if [[ -d $ROOT_DIR ]]; then
     echo "Turning off running containers.."
     __containers_to_stop="$(docker ps -q)"
     docker stop $__containers_to_stop
-    /usr/bin/rsync -avhXA --delete --delete-after $ROOT_DIR /var/mnt/storage/backups/server/volumes/volumes-root/
+    /usr/bin/rsync -avhXA --info=progress --delete --delete-after $ROOT_DIR /var/mnt/storage/backups/server/volumes/volumes-root/
     echo "Finished backing up Docker volumes, turning on containers..."
     docker start $__containers_to_stop
     echo "Finished turning on containers"
