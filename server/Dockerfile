@@ -16,6 +16,9 @@ RUN rpm-ostree install \
   zsh && \
   rpm-ostree cleanup -m
 
+# When there are updates, not only download them, also restart the server automatically
+RUN sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=apply/' /etc/rpm-ostreed.conf
+
 RUN systemctl disable firewalld.service && \
   systemctl disable zfs-import-cache.service && \
   systemctl enable zfs-import-scan.service && \
