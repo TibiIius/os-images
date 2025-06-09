@@ -1,12 +1,10 @@
 #!/bin/sh
 
-set -e
-
 ROOT_DIR=/var/lib/docker/volumes/
 
 if [[ -d $ROOT_DIR ]]; then
     echo "Backing up Docker volumes..."
-    /usr/bin/rsync -avhXA --info=progress --delete --delete-after $ROOT_DIR /var/mnt/storage/backups/server/volumes/volumes-root/
+    /usr/bin/rsync -avhXA --info=progress --delete --delete-after $ROOT_DIR /var/mnt/storage/backups/server/volumes/volumes-root/ || true
     echo "Finished backing up Docker volumes"
 fi
 
