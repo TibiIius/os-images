@@ -19,7 +19,7 @@ RUN rpm-ostree install \
 # When there are updates, not only download them, also restart the server automatically
 RUN sed -i 's/AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=apply/' /etc/rpm-ostreed.conf \
 	# Adjust auto-update timer
-	&& sed -i 's/OnBootSec=.*/OnCalendar=*-*-* 00:00:00/g' /usr/lib/systemd/system/rpm-ostreed-automatic.timer
+	&& sed -i 's/OnBootSec=.*/OnCalendar=*-*-* 04:30:00/g' /usr/lib/systemd/system/rpm-ostreed-automatic.timer
 
 RUN systemctl disable firewalld.service && \
 	systemctl disable zfs-import-cache.service && \
