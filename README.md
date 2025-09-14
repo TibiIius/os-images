@@ -1,5 +1,7 @@
 # Custom Fedora Silverblue OCI Images
 
+Archived in favor of [BlueBuild images](https://github.com/TibiIius/bluebuild-images)
+
 This repository contains Dockerfiles for building OCI images based off of Fedora Silverblue.
 These images are meant to be used as workstation OS images.
 
